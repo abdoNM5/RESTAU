@@ -2,6 +2,10 @@
 #include <stdlib.h>
 #include <string.h>
 typedef struct {
+    char username[USERNAME_LEN];
+    char password[PASSWORD_LEN];
+} User;
+typedef struct {
     int id;                // Identifiant unique de l'employé
     char name[50];         // Nom de l'employé
     float salary;          // Salaire de l'employé
@@ -19,7 +23,10 @@ typedef struct {
     int capacity;      // Capacité d'accueil de la table
     int isOccupied;    // État de la table (1 si occupée, 0 si libre)
 } Table;
-
+User users[2] = {
+    {"manager", "admin123"},   // Manager credentials
+    {"reception", "admin123"} // Receptionist credentials
+};
 // Structure représentant une réservation
 typedef struct {
     char customerName[50]; // Nom du client
@@ -27,6 +34,25 @@ typedef struct {
     Food order[10];        // Commande des aliments
     int orderCount;        // Nombre d'aliments commandés
 } Reservation;
+
+// Function to authenticate user
+int authenticate(char *username, char *password) {
+    int usernameValid = 0; // Flag for username validation
+    int passwordValid = 0; // Flag for password validation
+
+    for (int i = 0; i < 2; i++) {
+        if (strcmp(users[i].username, username) == 0) {
+            usernameValid = 1; // Username is valid
+        }
+        if (strcmp(users[i].password, password) == 0) {
+            passwordValid = 1; // Password is valid
+        }
+    }
+
+    // Return 1 if either the username or password is valid
+    return usernameValid || passwordValid;
+}
+
 void displayEmployee(Employee emp) {
     printf("ID: %d, Nom: %s, Salaire: %.2f, Poste: %s\n", emp.id, emp.name, emp.salary, emp.position);
 }
