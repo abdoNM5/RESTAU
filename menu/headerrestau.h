@@ -37,23 +37,39 @@ typedef struct {
     Food order[10];        // Commande des aliments
     int orderCount;        // Nombre d'aliments commandés
 } Reservation;
-
-// Function to authenticate user
+//Function to authenticate user
 int authenticate(char *username, char *password) {
-    int usernameValid = 0; // Flag for username validation
-    int passwordValid = 0; // Flag for password validation
-
     for (int i = 0; i < 2; i++) {
-        if (strcmp(users[i].username, username) == 0) {
-            usernameValid = 1; // Username is valid
-        }
-        if (strcmp(users[i].password, password) == 0) {
-            passwordValid = 1; // Password is valid
+        // Check if both the username and password match for the same user
+        if (strcmp(users[i].username, username) == 0 &&
+            strcmp(users[i].password, password) == 0) {
+            return 1; // Authentication successful
         }
     }
+    return 0; // Authentication failed
+}
 
-    // Return 1 if either the username or password is valid
-    return usernameValid || passwordValid;
+// Function to input password with masking
+void inputPassword(char *password) {
+    char ch;
+    int i = 0;
+
+    printf("Enter password: ");
+    while (i < PASSWORD_LEN - 1) {
+        ch = getch(); // Get a character without echoing it to the console
+        if (ch == '\r') { // If Enter is pressed
+            break;
+        }
+        if (ch == '\b' && i > 0) { // Handle backspace
+            printf("\b \b"); // Erase the last asterisk
+            i--;
+        } else if (ch != '\b') {
+            password[i++] = ch; // Store the character
+            printf("*"); // Print asterisk
+        }
+    }
+    password[i] = '\0'; // Null-terminate the string
+    printf("\n"); // Move to the next line
 }
 
 void displayEmployee(Employee emp) {
