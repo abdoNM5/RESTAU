@@ -74,7 +74,7 @@ void addEmployee(Employee **employees, int *count) {
     printf("Entrez le salaire de l'employ�: ");
     scanf("%f", &(*employees)[*count].salary);
     printf("Entrez le poste de l'employ�: ");
-    scanf("%s", (*employees)[*count].position);  // Nouvelle entr�e pour le poste
+    scanf("%s", (*employees)[*count].position);  // Nouvelle entre pour le poste
 
     (*count)++;
     printf("Employ� ajout� avec succ�s !\n");
