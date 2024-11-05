@@ -74,7 +74,7 @@ void addEmployee(Employee **employees, int *count) {
     printf("Entrez le salaire de l'employ�: ");
     scanf("%f", &(*employees)[*count].salary);
     printf("Entrez le poste de l'employ�: ");
-    scanf("%s", (*employees)[*count].position);  // Nouvelle entr�e pour le poste
+    scanf("%s", (*employees)[*count].position);  // Nouvelle entre pour le poste
 
     (*count)++;
     printf("Employ� ajout� avec succ�s !\n");
@@ -265,6 +265,6 @@ void displayDiner() {
         printf("Ingr�dients: Poisson (daurade ou sardine), Coriandre, Persil, Ail, Paprika, Cumin\n");
         printf("5.\n--- Briouates ---\n");
         printf("Ingr�dients: Feuilles de brick, Farce (poulet ou l�gumes), Fromage, Cannelle\n");
-        printf("6. Retour au menu principal\n");
+        printf("6. Retour au menu \n");
 }
 
