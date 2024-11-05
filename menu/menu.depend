@@ -1,0 +1,11 @@
+# depslib dependency file v1.0
+1730828448 source:c:\users\nmira\onedrive\documents\restau\menu\main.c
+	<stdio.h>
+	<stdlib.h>
+	"headerrestau.h"
+
+1730828571 c:\users\nmira\onedrive\documents\restau\menu\headerrestau.h
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+
