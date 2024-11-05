@@ -1,6 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#define USERNAME_LEN 50  // Define a maximum length for username
+#define PASSWORD_LEN 50  // Define a maximum length for password
+
 typedef struct {
     char username[USERNAME_LEN];
     char password[PASSWORD_LEN];
