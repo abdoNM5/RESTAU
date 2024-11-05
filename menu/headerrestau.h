@@ -265,6 +265,6 @@ void displayDiner() {
         printf("Ingr�dients: Poisson (daurade ou sardine), Coriandre, Persil, Ail, Paprika, Cumin\n");
         printf("5.\n--- Briouates ---\n");
         printf("Ingr�dients: Feuilles de brick, Farce (poulet ou l�gumes), Fromage, Cannelle\n");
-        printf("6. Retour au menu \n");
+        printf("6. Retour au menu principal 1 \n");
 }
 
