@@ -5,7 +5,22 @@
 #include "identif.h"
 // #include "interface.h"
 int main()
+ abdoo
 {   
     login(1);
+{   setTextColor(13);
+    printf("WELCOME TO THE OFFICIAL WEEB SITE  OF RESTAU ID1");
+    resetColor();
+    setTextColor(13);
+    setCursorPosition(3,5);
+    printf("here is our MENU ");
+    resetColor();
+    displayBoissons();
+    displayPetitDejeuner();
+    displayDejeuner();
+    displayDiner();
+
+
+main
     return 0;
 }
