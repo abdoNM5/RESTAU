@@ -80,7 +80,7 @@ void login(int a) {
     do{
     c_textcolor(6);
     c_gotoxy(40,6);
-    if(a==1) printf("__________ Identification Pour GERANT ___________");
+    if(a==1) printf("_________ Identification Pour GERANT ___________");
     else printf("__________ Identification Pour RECEPTIONNISTE ___________");
         if(m!=0){
         c_textcolor(4);
