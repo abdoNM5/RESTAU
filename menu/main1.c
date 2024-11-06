@@ -31,7 +31,7 @@ int main() {
         system("cls");
         Options options;
         char *MAIN_OPTIONS[] = {
-            "employe",
+            "employers",
             "stoke",
             "raport",
             "exit"
