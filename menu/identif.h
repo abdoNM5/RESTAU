@@ -73,22 +73,25 @@ void gitUsername(char *name, int maxLength) {
     printf("\n");
 }
 
-void login() {
+void login(int a) {
     system("cls");
     int m=0;
     char password[15],name[35];
     do{
+    c_textcolor(6);
+    c_gotoxy(40,6);
+    if(a==1) printf("_________ Identification Pour GERANT ___________");
+    else printf("__________ Identification Pour RECEPTIONNISTE ___________");
         if(m!=0){
         c_textcolor(4);
-        c_gotoxy(85,8);
+        c_gotoxy(40,8);
         printf("--Vos infos ne sont pas valides--\n\n");}
-        c_textcolor(7);
-        c_gotoxy(85,10);
-        printf("**  L'identifiant   :  ");
+        c_textcolor(15);
+        c_gotoxy(40,10);
+        printf("***  L'identifiant   :");
         gitUsername(name,35);
-        fflush(stdin);
-        c_gotoxy(85,12);
-        printf("**  Mot_De_Passe    :  ");
+        c_gotoxy(40,12);
+        printf("***  Mot_De_Passe    :");
         maskPassword(password, 15);
         system("cls");
         m++;

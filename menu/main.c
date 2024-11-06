@@ -1,9 +1,13 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "headerrestau.h"
 #include <string.h>
 #include <conio.h>
+#include "identif.h"
+// #include "interface.h"
 int main()
+ abdoo
+{   
+    login(1);
 {   setTextColor(13);
     printf("WELCOME TO THE OFFICIAL WEEB SITE  OF RESTAU ID1");
     resetColor();
@@ -17,5 +21,6 @@ int main()
     displayDiner();
 
 
+main
     return 0;
 }
