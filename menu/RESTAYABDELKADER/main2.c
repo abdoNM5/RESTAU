@@ -50,6 +50,6 @@ int main()
         c_getch();
 
     } while (choice != 4);
-
+    c_clrscr();
     return 0;
 }
