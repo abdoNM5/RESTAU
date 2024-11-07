@@ -10,11 +10,14 @@ int main()
     do
     {
         c_textcolor(3);
+        c_gotoxy(40, 6);{
         printf("=== Employee Management System ===\n");
         printf("1. Add Employee\n");
         printf("2. Display Employees\n");
         printf("3. Delete Employee\n");
         printf("4. Exit\n");
+
+        }
         c_textcolor(2);
         printf("Choose an option: ");
         if (scanf("%d", &choice) != 1) {

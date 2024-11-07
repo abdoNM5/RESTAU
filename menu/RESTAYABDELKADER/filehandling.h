@@ -36,34 +36,67 @@ void normalizeFilePath(char *path) {
 }
 
 // Function to add an employee to a file
+
 void addEmployee() {
     char filePath[MAX_PATH_LENGTH];
     c_textcolor(2);
+    c_gotoxy(40, 6);
     printf("Enter the file path to save the employee data: ");
     scanf("%255s", filePath);
 
     normalizeFilePath(filePath);
 
-    // Open the file for appending
-    FILE *file = fopen(filePath, "a");
+    // Open the file for reading to check for existing IDs
+    FILE *file = fopen(filePath, "r");
     if (file == NULL) {
         c_textcolor(4);
+        c_gotoxy(40,6);
         perror("Error opening file");
         return;
     }
 
     Employee emp;
     c_textcolor(2);
+    c_gotoxy(40,6);
     printf("Enter Employee ID: ");
     
-    // Validate Employee ID input
+    // Validate Employee ID input and check for uniqueness
     while (scanf("%d", &emp.id) != 1) {
         c_textcolor(4);
         printf("Invalid input! Please enter a valid Employee ID: ");
-        while(getchar() != '\n'); // Clear input buffer
+        while (getchar() != '\n'); // Clear input buffer
+    }
+
+    // Check if the ID is already taken
+    int idExists = 0;
+    while (fscanf(file, "%d|%49[^|]|%f|%49[^\n]", &emp.id, emp.name, &emp.salary, emp.position) == 4) {
+        if (emp.id == emp.id) {
+            idExists = 1;
+            break;
+        }
+    }
+
+    fclose(file);  // Close the file after checking
+
+    // If the ID is already taken, ask for a new one
+    if (idExists) {
+        c_textcolor(4);
+        c_gotoxy(40,6);
+        printf("ID already taken! Please enter a different Employee ID: ");
+        return;
+    }
+
+    // Open the file for appending
+    file = fopen(filePath, "a");
+    if (file == NULL) {
+        c_textcolor(4);
+        c_gotoxy(40, 6);
+        perror("Error opening file");
+        return;
     }
 
     c_textcolor(1);
+    c_gotoxy(40, 6);
     printf("Enter Name: ");
     scanf(" %[^\n]s", emp.name);
 
@@ -76,14 +109,17 @@ void addEmployee() {
     // Validate Salary input
     while (scanf("%f", &emp.salary) != 1) {
         c_textcolor(4);
+        c_gotoxy(40, 6);
         printf("Invalid input! Please enter a valid Salary: ");
-        while(getchar() != '\n'); // Clear input buffer
+        while (getchar() != '\n'); // Clear input buffer
     }
 
     // Write employee data to the file using a delimiter
     fprintf(file, "%d|%s|%.2f|%s\n", emp.id, emp.name, emp.salary, emp.position);
     fclose(file);
+    
     c_textcolor(2);
+    c_gotoxy(40, 6);
     printf("Employee added successfully to %s!\n", filePath);
 }
 
@@ -91,6 +127,7 @@ void addEmployee() {
 void displayEmployees() {
     char filePath[MAX_PATH_LENGTH];
     c_textcolor(2);
+     c_gotoxy(40, 6);
     printf("Enter the file path to display the employee data: ");
     scanf("%255s", filePath);
 
@@ -105,11 +142,13 @@ void displayEmployees() {
 
     Employee emp;
     c_textcolor(2);
+    c_gotoxy(40, 6);
     printf("%-10s%-30s%-10s%-20s\n", "ID", "Name", "Salary", "Position");
     printf("-------------------------------------------------------------\n");
 
     while (fscanf(file, "%d|%49[^|]|%f|%49[^\n]", &emp.id, emp.name, &emp.salary, emp.position) == 4) {
         c_textcolor(2);
+
         printf("%-10d%-30s%-10.2f%-20s\n", emp.id, emp.name, emp.salary, emp.position);
     }
 
@@ -120,6 +159,7 @@ void displayEmployees() {
 void deleteEmployee() {
     char filePath[MAX_PATH_LENGTH];
     c_textcolor(2);
+    c_gotoxy(40, 6);
     printf("Enter the file path to delete an employee data: ");
     scanf("%255s", filePath);
 
@@ -134,6 +174,7 @@ void deleteEmployee() {
 
     int deleteId;
     c_textcolor(2);
+    c_gotoxy(40, 6);
     printf("Enter the employee ID to delete: ");
     scanf("%d", &deleteId);
 
