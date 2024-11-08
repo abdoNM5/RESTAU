@@ -2,9 +2,17 @@
 #include <stdlib.h>
 #include <string.h>
 #include "conio.h" // Single include for conio library
+#include <ctype.h>
 #define MAX_PATH_LENGTH 256 // Define the maximum length for file paths
 
 int background_color = 0;
+struct Report {
+    int id;
+    char date[11]; // Format: YYYY-MM-DD
+    float loss;
+    float earnings;
+    float profit;
+};
 
 // Define Employee struct
 typedef struct {
@@ -230,4 +238,101 @@ void deleteEmployee() {
     c_gotoxy(40, 10);
     printf("Employee with ID %d deleted successfully.\n", deleteId);
     c_getch();  // Wait for user to press a key
+}
+
+// Function to validate the date format (YYYY-MM-DD)
+int isValidDateFormat(const char *date) {
+    if (strlen(date) != 10) return 0;
+    if (date[4] != '-' || date[7] != '-') return 0;
+
+    for (int i = 0; i < 10; i++) {
+        if (i == 4 || i == 7) continue;
+        if (!isdigit(date[i])) return 0;
+    }
+    return 1;
+}
+
+// Function to check if ID is unique in the specified file
+int isUniqueID(const char *filePath, int id) {
+    struct Report report;
+    FILE *file = fopen(filePath, "r");
+
+    if (file == NULL) return 1; // If file does not exist, ID is unique by default
+
+    while (fscanf(file, "%d\t%10s\t%f\t%f\t%f\n", &report.id, report.date, &report.earnings, &report.loss, &report.profit) != EOF) {
+        if (report.id == id) {
+            fclose(file);
+            return 0; // ID already exists
+        }
+    }
+    fclose(file);
+    return 1; // ID is unique
+}
+
+// Function to add a new report entry to the specified file
+void addReportEntry(const char *filePath) {
+    struct Report report;
+    normalizeFilePath((char*)filePath);
+
+    FILE *file = fopen(filePath, "a"); // Open file in append mode
+    if (file == NULL) {
+        printf("Error opening file: %s\n", filePath);
+        return;
+    }
+
+    // Get report ID with unique ID check
+    do {
+        printf("Enter Report ID: ");
+        scanf("%d", &report.id);
+        if (!isUniqueID(filePath, report.id)) {
+            printf("Error: ID already exists. Please enter a unique ID.\n");
+        }
+    } while (!isUniqueID(filePath, report.id));
+
+    // Get date with format validation
+    do {
+        printf("Enter Date (YYYY-MM-DD): ");
+        scanf("%s", report.date);
+        if (!isValidDateFormat(report.date)) {
+            printf("Error: Invalid date format. Please enter in YYYY-MM-DD format.\n");
+        }
+    } while (!isValidDateFormat(report.date));
+
+    // Get daily earnings and loss
+    printf("Enter Daily Earnings (Won): ");
+    scanf("%f", &report.earnings);
+
+    printf("Enter Daily Loss: ");
+    scanf("%f", &report.loss);
+
+    // Calculate profit
+    report.profit = report.earnings - report.loss;
+
+    // Write the report entry to the file in a tabular format
+    fprintf(file, "%d\t%s\t%.2f\t%.2f\t%.2f\n", report.id, report.date, report.earnings, report.loss, report.profit);
+    fclose(file);
+
+    printf("Report entry added successfully to %s!\n", filePath);
+}
+
+// Function to display all report entries from the specified file
+void displayAllReports(const char *filePath) {
+    struct Report report;
+    normalizeFilePath((char*)filePath);
+
+    FILE *file = fopen(filePath, "r"); // Open file in read mode
+    if (file == NULL) {
+        printf("Error opening file: %s\n", filePath);
+        return;
+    }
+
+    printf("\n--- Daily Financial Report ---\n");
+    printf("| %-5s | %-10s | %-10s | %-10s | %-10s |\n", "ID", "Date", "Earnings", "Loss", "Profit");
+    printf("-------------------------------------------------------------\n");
+
+    // Read and display each entry from the file
+    while (fscanf(file, "%d\t%10s\t%f\t%f\t%f\n", &report.id, report.date, &report.earnings, &report.loss, &report.profit) != EOF) {
+        printf("| %-5d | %-10s | %-10.2f | %-10.2f | %-10.2f |\n", report.id, report.date, report.earnings, report.loss, report.profit);
+    }
+    fclose(file);
 }
