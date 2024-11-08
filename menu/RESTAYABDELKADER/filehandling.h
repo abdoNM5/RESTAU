@@ -140,14 +140,15 @@ void addEmployee() {
     c_gotoxy(40, 20);  // Move the cursor down to a new line
     printf("Employee added successfully to %s!\n", filePath);
     c_getch();  // Wait for user to press a key
-}
-
-// Function to display all employees from a file
-void displayEmployees() {
+}void displayEmployees() {
     c_clrscr();  // Clear the screen
+    c_textcolor(15);  // Set text color to white for the title
     c_gotoxy(40, 6);  // Move the cursor to (40, 6)
+    printf("=== Employee Data Display ===\n");
+
     char filePath[MAX_PATH_LENGTH];
-    c_textcolor(2);
+    c_textcolor(2);  // Set text color to green for the prompt
+    c_gotoxy(40, 8);
     printf("Enter the file path to display the employee data: ");
     scanf("%255s", filePath);
 
@@ -155,27 +156,34 @@ void displayEmployees() {
 
     FILE *file = fopen(filePath, "r");
     if (file == NULL) {
-        c_textcolor(4);
+        c_textcolor(4);  // Set text color to red for error messages
+        c_gotoxy(40, 10);
         perror("Error opening file");
+        c_getch();  // Wait for user to press a key
         return;
     }
 
     Employee emp;
-    c_textcolor(2);
-    c_gotoxy(40, 8);
+    c_textcolor(15);  // Set text color to white for the headings
+    c_gotoxy(40, 10);
     printf("%-10s%-30s%-10s%-20s\n", "ID", "Name", "Salary", "Position");
-    printf("-------------------------------------------------------------\n");
+    printf("----------------------------------------------------------------------------------------------------\n");
 
-    int line = 10;  // Start from line 10 for printing employees
+    int line = 12;  // Start printing employees from line 12
     while (fscanf(file, "%d|%49[^|]|%f|%49[^\n]", &emp.id, emp.name, &emp.salary, emp.position) == 4) {
         c_gotoxy(40, line);
+        c_textcolor(2);  // Set text color to green for employee data
         printf("%-10d%-30s%-10.2f%-20s\n", emp.id, emp.name, emp.salary, emp.position);
         line++;
     }
 
     fclose(file);
+    c_textcolor(15);  // Reset text color to white
+    c_gotoxy(40, line);
+    printf("Press any key to continue...");
     c_getch();  // Wait for user to press a key
 }
+
 
 // Function to delete an employee from a file
 void deleteEmployee() {
@@ -273,7 +281,7 @@ int isUniqueID(const char *filePath, int id) {
 void addReportEntry(const char *filePath) {
     struct Report report;
     normalizeFilePath((char*)filePath);
-
+    
     FILE *file = fopen(filePath, "a"); // Open file in append mode
     if (file == NULL) {
         printf("Error opening file: %s\n", filePath);
@@ -314,25 +322,36 @@ void addReportEntry(const char *filePath) {
 
     printf("Report entry added successfully to %s!\n", filePath);
 }
-
-// Function to display all report entries from the specified file
 void displayAllReports(const char *filePath) {
     struct Report report;
     normalizeFilePath((char*)filePath);
 
     FILE *file = fopen(filePath, "r"); // Open file in read mode
     if (file == NULL) {
+        c_textcolor(4);  // Set text color to red for errors
+        c_gotoxy(40, 6);  // Move to appropriate location
         printf("Error opening file: %s\n", filePath);
+        c_getch();  // Wait for user to press a key
         return;
     }
 
-    printf("\n--- Daily Financial Report ---\n");
+    c_clrscr();  // Clear the screen
+    c_textcolor(15);  // Set text color to white for the title
+    c_gotoxy(40, 6);
+    printf("=== Daily Financial Report ===\n");
+
+    c_textcolor(2);  // Set text color to green for the column headers
     printf("| %-5s | %-10s | %-10s | %-10s | %-10s |\n", "ID", "Date", "Earnings", "Loss", "Profit");
-    printf("-------------------------------------------------------------\n");
+    printf("-----------------------------------------------------------------------------------------------------------\n");
 
     // Read and display each entry from the file
     while (fscanf(file, "%d\t%10s\t%f\t%f\t%f\n", &report.id, report.date, &report.earnings, &report.loss, &report.profit) != EOF) {
+        c_textcolor(15);  // Set text color to white for the report data
         printf("| %-5d | %-10s | %-10.2f | %-10.2f | %-10.2f |\n", report.id, report.date, report.earnings, report.loss, report.profit);
     }
+
     fclose(file);
+    c_textcolor(15);  // Reset text color to white
+    printf("\nPress any key to continue...");
+    c_getch();  // Wait for user to press a key
 }
