@@ -30,8 +30,7 @@ Options options;
         };
     char *HOME[] = {
         "Info Restau",
-        "Categories",
-        "Produits",
+        "Our Menu",
         "exit"
     };
 
@@ -130,12 +129,10 @@ Options options;
             dashboard();
             break;
         case 1:
-
+            displayMenuTable();
+            dashboard(); 
             break;
         case 2:
-
-            break;
-        case 3:
             utilisation();
             break;
         default:
