@@ -1,0 +1,10 @@
+----------------------------------------
+----------------------------------------
+----------------------------------------
+Reservation ID: 2
+Client Name: BERRADA
+Reservation Type: phone
+Reservation Date: 2024-11-11
+Reservation Time: 11:00
+Table Number: 14
+----------------------------------------

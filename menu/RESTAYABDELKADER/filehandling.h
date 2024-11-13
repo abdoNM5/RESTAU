@@ -1,11 +1,15 @@
+#ifndef FILEHANDLING_H  // Garder l'inclusion unique
+#define FILEHANDLING_H
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include "conio.h" // Single include for conio library
 #include <ctype.h>
+
 #define MAX_PATH_LENGTH 256 // Define the maximum length for file paths
 
-int background_color = 0;
+extern int background_color;
+
 struct Report {
     int id;
     char date[11]; // Format: YYYY-MM-DD
@@ -42,6 +46,7 @@ void normalizeFilePath(char *path) {
         }
     }
 }
+
 void addEmployee() {
     c_clrscr();  // Clear the screen
     c_gotoxy(40, 6);  // Move the cursor to (40, 6)
@@ -140,7 +145,9 @@ void addEmployee() {
     c_gotoxy(40, 20);  // Move the cursor down to a new line
     printf("Employee added successfully to %s!\n", filePath);
     c_getch();  // Wait for user to press a key
-}void displayEmployees() {
+}
+
+void displayEmployees() {
     c_clrscr();  // Clear the screen
     c_textcolor(15);  // Set text color to white for the title
     c_gotoxy(40, 6);  // Move the cursor to (40, 6)
@@ -183,7 +190,6 @@ void addEmployee() {
     printf("Press any key to continue...");
     c_getch();  // Wait for user to press a key
 }
-
 
 // Function to delete an employee from a file
 void deleteEmployee() {
@@ -248,16 +254,61 @@ void deleteEmployee() {
     c_getch();  // Wait for user to press a key
 }
 
-// Function to validate the date format (YYYY-MM-DD)
 int isValidDateFormat(const char *date) {
     if (strlen(date) != 10) return 0;
-    if (date[4] != '-' || date[7] != '-') return 0;
-
     for (int i = 0; i < 10; i++) {
-        if (i == 4 || i == 7) continue;
-        if (!isdigit(date[i])) return 0;
+        if (i == 4 || i == 7) {
+            if (date[i] != '-') return 0;
+        } else if (!isdigit(date[i])) {
+            return 0;
+        }
     }
     return 1;
+}
+
+void displayReports() {
+    c_clrscr();  // Clear the screen
+    c_textcolor(15);  // Set text color to white for the title
+    c_gotoxy(40, 6);  // Move the cursor to (40, 6)
+    printf("=== Report Display ===\n");
+
+    char filePath[MAX_PATH_LENGTH];
+    c_textcolor(2);  // Set text color to green for the prompt
+    c_gotoxy(40, 8);
+    printf("Enter the file path to display the reports: ");
+    scanf("%255s", filePath);
+
+    normalizeFilePath(filePath);
+
+    FILE *file = fopen(filePath, "r");
+    if (file == NULL) {
+        c_textcolor(4);  // Set text color to red for error messages
+        c_gotoxy(40, 10);
+        perror("Error opening file");
+        c_getch();  // Wait for user to press a key
+        return;
+    }
+
+    struct Report rep;
+    c_textcolor(15);  // Set text color to white for the headings
+    c_gotoxy(40, 10);
+    printf("%-10s%-12s%-12s%-12s\n", "ID", "Date", "Loss", "Earnings");
+    printf("-----------------------------------------------------------\n");
+
+    int line = 12;
+    while (fscanf(file, "%d|%10[^|]|%f|%f", &rep.id, rep.date, &rep.loss, &rep.earnings) == 4) {
+        rep.profit = rep.earnings - rep.loss;
+        c_gotoxy(40, line);
+        c_textcolor(2);  // Set text color to green for report data
+        printf("%-10d%-12s%-12.2f%-12.2f\n", rep.id, rep.date, rep.loss, rep.earnings);
+        line++;
+    }
+
+    fclose(file);
+    c_textcolor(15);  // Reset text color to white
+    c_gotoxy(40, line);
+    printf("Press any key to continue...");
+    c_getch();  // Wait for user to press a key
 }
 
 // Function to check if ID is unique in the specified file
@@ -281,7 +332,7 @@ int isUniqueID(const char *filePath, int id) {
 void addReportEntry(const char *filePath) {
     struct Report report;
     normalizeFilePath((char*)filePath);
-    
+
     FILE *file = fopen(filePath, "a"); // Open file in append mode
     if (file == NULL) {
         printf("Error opening file: %s\n", filePath);
@@ -322,36 +373,5 @@ void addReportEntry(const char *filePath) {
 
     printf("Report entry added successfully to %s!\n", filePath);
 }
-void displayAllReports(const char *filePath) {
-    struct Report report;
-    normalizeFilePath((char*)filePath);
 
-    FILE *file = fopen(filePath, "r"); // Open file in read mode
-    if (file == NULL) {
-        c_textcolor(4);  // Set text color to red for errors
-        c_gotoxy(40, 6);  // Move to appropriate location
-        printf("Error opening file: %s\n", filePath);
-        c_getch();  // Wait for user to press a key
-        return;
-    }
-
-    c_clrscr();  // Clear the screen
-    c_textcolor(15);  // Set text color to white for the title
-    c_gotoxy(40, 6);
-    printf("=== Daily Financial Report ===\n");
-
-    c_textcolor(2);  // Set text color to green for the column headers
-    printf("| %-5s | %-10s | %-10s | %-10s | %-10s |\n", "ID", "Date", "Earnings", "Loss", "Profit");
-    printf("-----------------------------------------------------------------------------------------------------------\n");
-
-    // Read and display each entry from the file
-    while (fscanf(file, "%d\t%10s\t%f\t%f\t%f\n", &report.id, report.date, &report.earnings, &report.loss, &report.profit) != EOF) {
-        c_textcolor(15);  // Set text color to white for the report data
-        printf("| %-5d | %-10s | %-10.2f | %-10.2f | %-10.2f |\n", report.id, report.date, report.earnings, report.loss, report.profit);
-    }
-
-    fclose(file);
-    c_textcolor(15);  // Reset text color to white
-    printf("\nPress any key to continue...");
-    c_getch();  // Wait for user to press a key
-}
+#endif // FILEHANDLING_H
