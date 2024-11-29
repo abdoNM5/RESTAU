@@ -7,6 +7,7 @@
 #include "home.h"
 #include "dashboard.h"
 #include "manager.h"
+#include "commandes.h"
 
 Options options;
     
@@ -14,6 +15,17 @@ Options options;
         "Client",
         "Receptionist",
         "Manager",
+        "exit"
+    };
+    char *RESEPS[] = {
+        "Commande",
+        "Reservation",
+        "exit"
+    };
+    char *COMMANDE[] = {
+        "Add Commande",
+        "Display Commandes",
+        "Delete Commande",
         "exit"
     };
     char *MANAGER[] = {
@@ -38,6 +50,8 @@ Options options;
         void emploi();
         void utilisation();
         void gerant();
+        void resp();
+        void commande();
  
     void utilisation(){
         options.title = "=== DragonWorrier Restaurant USERS ===";
@@ -53,6 +67,7 @@ Options options;
         case 1:
              login(2);
             system("cls");
+            resp();
             break;
         case 2:
              login(1);
@@ -80,7 +95,54 @@ Options options;
             utilisation();
         }
         }
-    
+    void resp(){
+         options.title = "=== RESEP WORKSPACE ===";
+        options.ops = RESEPS;
+        options.len = sizeof(RESEPS) / sizeof(RESEPS[0]);
+
+        int option = select_menu(options);
+        if (option == 0){
+            commande();
+        }else if (option == 2){
+            utilisation();
+        }
+    }
+    void commande(){
+         options.title = "=== GESTION DES COMMANDE ===";
+        options.ops = COMMANDE;
+        options.len = sizeof(COMMANDE) / sizeof(COMMANDE[0]);
+
+        int option = select_menu(options);
+           switch (option)
+        {
+        case 0:
+            ajouterCommande("commandes.bin");
+            printf("\nPress any key to prove...");
+            c_getch();
+            commande();
+            break;
+        case 1:
+            afficherCommandes("commandes.bin");
+            printf("\n\nPress any key to prove...");
+            c_getch();
+            commande();
+            break;
+        case 2:
+            supprimerCommande("commandes.bin");
+            printf("\n\nPress any key to prove...");
+            c_getch();
+            commande();
+            break;
+        case 3:
+            printf("\n\nPress any key to prove...");
+            c_getch();
+            commande();
+            break;
+             default:
+            printf("\nInvalid choice! Please try again.\n");
+        }
+       
+    }
     void emploi() {
         options.title = "=== GESTION DES EMPLOYEES ===";
         options.ops = EMPLOYERS;
