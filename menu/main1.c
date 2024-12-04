@@ -6,10 +6,12 @@
 #include <windows.h>
 #include "home.h"
 #include "dashboard.h"
-#include "manager.h"
-#include "commandes.h"
+#include "employer.h"
+#include "commande.h"
 
 Options options;
+
+
     
     char *MAIN_OPTIONS[] = {
         "Client",
@@ -38,7 +40,8 @@ Options options;
         "Add Employee",
         "Display Employees",
         "Delete Employee",
-    "exit"
+        "Update Employee",
+        "exit"
         };
     char *HOME[] = {
         "Info Restau",
@@ -52,6 +55,7 @@ Options options;
         void gerant();
         void resp();
         void commande();
+        void reservation();
  
     void utilisation(){
         options.title = "=== DragonWorrier Restaurant USERS ===";
@@ -116,19 +120,19 @@ Options options;
            switch (option)
         {
         case 0:
-            ajouterCommande("commandes.bin");
+            ajouterCommande("Commandes.bin");
             printf("\nPress any key to prove...");
             c_getch();
             commande();
             break;
         case 1:
-            afficherCommandes("commandes.bin");
+            afficherCommandes("Commandes.bin");
             printf("\n\nPress any key to prove...");
             c_getch();
             commande();
             break;
         case 2:
-            supprimerCommande("commandes.bin");
+            supprimerCommande("Commandes.bin");
             printf("\n\nPress any key to prove...");
             c_getch();
             commande();
@@ -136,14 +140,18 @@ Options options;
         case 3:
             printf("\n\nPress any key to prove...");
             c_getch();
-            commande();
+            resp();
             break;
              default:
             printf("\nInvalid choice! Please try again.\n");
         }
        
     }
-    void emploi() {
+    void reservation(){
+        
+    }
+    void emploi(){
+        
         options.title = "=== GESTION DES EMPLOYEES ===";
         options.ops = EMPLOYERS;
         options.len = sizeof(EMPLOYERS) / sizeof(EMPLOYERS[0]);
@@ -170,10 +178,14 @@ Options options;
             emploi();
             break;
         case 3:
+            updateEmployee();
             printf("\n\nPress any key to prove...");
             c_getch();
-            gerant();
+            emploi();
             break;
+        case 4:
+            gerant();
+
              default:
             printf("\nInvalid choice! Please try again.\n");
         }
