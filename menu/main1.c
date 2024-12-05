@@ -8,6 +8,7 @@
 #include "dashboard.h"
 #include "employer.h"
 #include "commande.h"
+#include "facture.h"
 
 Options options;
 
@@ -22,6 +23,7 @@ Options options;
     char *RESEPS[] = {
         "Commande",
         "Reservation",
+        "Facture",
         "exit"
     };
     char *COMMANDE[] = {
@@ -56,7 +58,6 @@ Options options;
         void resp();
         void commande();
         void reservation();
- 
     void utilisation(){
         options.title = "=== DragonWorrier Restaurant USERS ===";
         options.ops = MAIN_OPTIONS;
@@ -99,18 +100,39 @@ Options options;
             utilisation();
         }
         }
-    void resp(){
-         options.title = "=== RESEP WORKSPACE ===";
-        options.ops = RESEPS;
-        options.len = sizeof(RESEPS) / sizeof(RESEPS[0]);
+void resp() {
+    options.title = "=== RESEP WORKSPACE ===";
+    options.ops = RESEPS;
+    options.len = sizeof(RESEPS) / sizeof(RESEPS[0]);
 
-        int option = select_menu(options);
-        if (option == 0){
+    int option = select_menu(options);
+    switch (option) {
+        case 0: 
             commande();
-        }else if (option == 2){
-            utilisation();
+            break;
+        case 1: 
+            reservation();
+            break;
+        case 2: { 
+            int id;
+            printf("Entrez l'ID de la commande pour générer une facture : ");
+            while (scanf("%d", &id) != 1) {
+                printf("Entrée invalide ! Veuillez entrer un entier : ");
+                clearBuffer();
+            }
+            creerFacture(id);
+            printf("\nPress any key to return to RESEP workspace...");
+            c_getch();
+            resp();
+            break;
         }
+        case 3: 
+            utilisation();
+            break;
+        default:
+            printf("\nInvalid choice! Please try again.\n");
     }
+}
     void commande(){
          options.title = "=== GESTION DES COMMANDE ===";
         options.ops = COMMANDE;

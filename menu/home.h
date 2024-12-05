@@ -1,5 +1,6 @@
-#ifndef home_h
-#define home_h
+#ifndef HOME_H
+#define HOME_H
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <windows.h>
@@ -8,22 +9,17 @@
 #define RESET       "\033[0m"
 #define RED         "\033[31m"
 #define GREEN       "\033[32m"
-#define YELLOW      "\033[33m"
-#define BLUE        "\033[34m"
-#define MAGENTA     "\033[35m"
-#define CYAN        "\033[36m"
 #define WHITE       "\033[37m"
 
 // Define ANSI codes for styles
 #define BOLD        "\033[1m"
 #define ITALIC      "\033[3m"
-#define RESET       "\033[0m"
 
-typedef struct Options{
+typedef struct Options {
     char **ops;
     int len;
     char *title;
-}Options;
+} Options;
 
 // Function to calculate the visible length of a string (ignoring ANSI codes)
 int visible_length(const char *text) {
@@ -70,24 +66,29 @@ void print_centered(const char *text) {
     printf("%s\n", text);
 }
 
-
-void draw(int op,Options options){
-    system("cls"); 
+// Function to draw the menu with options
+void draw(int op, Options options) {
+    system("cls");  // Clear the screen
     char line[50];
-    sprintf(line, MAGENTA BOLD "%s\n" RESET , options.title);
+
+    // Print the title centered
+    sprintf(line, BOLD "%s\n" RESET, options.title);
     print_centered(line);
-    for (int i = 0 ; i <  options.len ; i++) { 
-        if (i == (options.len - 1)){
-            sprintf(line,ITALIC "%s%s%s" RESET, op == i ?BOLD RED "[" : RED " " , options.ops[i], op == i ? RED "]" : WHITE " ");
-        }else{
-        sprintf(line,ITALIC "%s%s%s" RESET, op == i ?BOLD GREEN "[" : WHITE " " , options.ops[i], op == i ? GREEN "]" : WHITE " ");
+
+    // Display options
+    for (int i = 0; i < options.len; i++) {
+        if (i == op) {  // Highlight the selected option
+            sprintf(line, ITALIC "%s%s%s" RESET, BOLD RED "[", options.ops[i], RED "]");
+        } else {  // Non-selected options
+            sprintf(line, ITALIC "%s%s%s" RESET, WHITE " ", options.ops[i], WHITE " ");
         }
-        print_centered(line);  
-    }  
+        print_centered(line);
+    }
 }
 
+// Function to handle menu selection with the up arrow
 int select_menu(Options options) {
-    int current_option = 0;
+    int current_option = 0;  // Start with the first option selected
     HANDLE hInput = GetStdHandle(STD_INPUT_HANDLE);  // Get the input handle
 
     // Set input mode to enable window input (for arrow keys)
@@ -95,26 +96,23 @@ int select_menu(Options options) {
     GetConsoleMode(hInput, &mode);
     SetConsoleMode(hInput, mode & ~(ENABLE_LINE_INPUT | ENABLE_ECHO_INPUT));
 
-    draw(current_option , options);
+    draw(current_option, options);
 
     INPUT_RECORD input;
     DWORD events;
+
     while (1) {
         ReadConsoleInput(hInput, &input, 1, &events);  // Read input from console
         if (input.EventType == KEY_EVENT && input.Event.KeyEvent.bKeyDown) {
             switch (input.Event.KeyEvent.wVirtualKeyCode) {
-                case VK_UP:
-                    if (current_option > 0) {
-                        current_option--;
-                        draw(current_option , options);
+                case VK_UP:  // Use the up arrow to scroll
+                    current_option--;  // Move up
+                    if (current_option < 0) {  // Wrap around to the last option
+                        current_option = options.len - 1;
                     }
+                    draw(current_option, options);
                     break;
-                case VK_DOWN:
-                    if (current_option < options.len-1) {
-                        current_option++;
-                        draw(current_option , options);
-                    }
-                    break;
+
                 case VK_RETURN:  // Enter key pressed
                     return current_option;
             }
@@ -122,13 +120,16 @@ int select_menu(Options options) {
     }
 }
 
-Options util(char *titre ,char **list_ops){
+// Function to create options structure
+Options util(char *titre, char **list_ops, int len) {
     Options options;
 
-     options.title = titre;
-     options.ops = list_ops;
-     options.len = sizeof(list_ops) / sizeof(list_ops[0]);
+    options.title = titre;
+    options.ops = list_ops;
+    options.len = len;
 
-     return options;
+    return options;
 }
-#endif 
+
+#endif
+ 
