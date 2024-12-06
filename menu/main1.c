@@ -1,18 +1,19 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <conio.h>
+#include "conio.h"
 #include "identif.h"
 #include <windows.h>
 #include "home.h"
 #include "dashboard.h"
 #include "employer.h"
 #include "commande.h"
-
+#include "reservation.h"
+#include "facture.h"
+#define FILE_PATH1 "reservations.bin"
 Options options;
 
-
-    
+   
     char *MAIN_OPTIONS[] = {
         "Client",
         "Receptionist",
@@ -20,8 +21,9 @@ Options options;
         "exit"
     };
     char *RESEPS[] = {
-        "Commande",
-        "Reservation",
+        "COMMANDE",
+        "RESERVATION",
+        "Facture",
         "exit"
     };
     char *COMMANDE[] = {
@@ -32,6 +34,7 @@ Options options;
     };
     char *MANAGER[] = {
         "EMPLOYEES",
+        "GESTION MENU",
         "STOKE",
         "RAPORT",
         "exit"
@@ -44,10 +47,24 @@ Options options;
         "exit"
         };
     char *HOME[] = {
-        "Info Restau",
-        "Our Menu",
+        "INFO RESTOU",
+        "OUR MENU",
         "exit"
-    };
+        };
+    char *RESERV[] = {
+        "Add Reservation",
+        "Display Reservations",
+        "Delete Reservation",
+        "exit"
+        };
+    char *MENU[] = {
+        "Add Dish",
+        "Add Drink",
+        "Display Menu",
+        "Delete Dish",
+        "Delete Drink",
+        "exit"
+        };
 
         void dashboard();
         void emploi();
@@ -56,6 +73,8 @@ Options options;
         void resp();
         void commande();
         void reservation();
+        void facture();
+        void menu();
  
     void utilisation(){
         options.title = "=== DragonWorrier Restaurant USERS ===";
@@ -88,7 +107,7 @@ Options options;
     }
     void gerant(){   
 
-        options.title = "=== MANAGER WORKSPACE ===";
+        options.title = "==== MANAGER WORKSPACE ====";
         options.ops = MANAGER;
         options.len = sizeof(MANAGER) / sizeof(MANAGER[0]);
 
@@ -97,22 +116,73 @@ Options options;
             emploi();
         }else if (option == 3){
             utilisation();
+        }else if (option == 1){
+            menu();
         }
         }
     void resp(){
-         options.title = "=== RESEP WORKSPACE ===";
+        options.title = "=== RESEP WORKSPACE ===";
         options.ops = RESEPS;
         options.len = sizeof(RESEPS) / sizeof(RESEPS[0]);
 
         int option = select_menu(options);
         if (option == 0){
             commande();
-        }else if (option == 2){
+        }else if (option == 3){
             utilisation();
+        }else if (option == 1){
+            reservation();
+        }else if (option == 2){
+            facture();
+        }
+    }
+    void menu(){
+        options.title = "========== Restaurant Menu Management ==========";
+        options.ops = MENU;
+        options.len = sizeof(MENU) / sizeof(MENU[0]);
+
+        int option = select_menu(options);
+         switch (option)
+        {
+        case 0:
+            addDish();
+            printf("\n\nPress any key to prove...");
+            c_getch();
+            menu();
+            break;
+        case 1:
+            addDrink();
+            printf("\n\nPress any key to prove...");
+            c_getch();
+            menu();
+            break;
+        case 2:
+            displayMenu();
+            printf("\n\nPress any key to prove...");
+            c_getch();
+            menu();
+            break;
+        case 3:
+            deleteDish();
+            printf("\n\nPress any key to prove...");
+            c_getch();
+            menu();
+            break;
+        case 4:
+            deleteDrink();
+            printf("\nInvalid choice! Please try again.\n");
+            c_getch();
+            menu();
+            break;
+        case 5:
+            gerant();
+            break;
+        default:
+            printf("\nInvalid choice! Please try again.\n");
         }
     }
     void commande(){
-         options.title = "=== GESTION DES COMMANDE ===";
+        options.title = "=== GESTION DES COMMANDE ===";
         options.ops = COMMANDE;
         options.len = sizeof(COMMANDE) / sizeof(COMMANDE[0]);
 
@@ -120,19 +190,19 @@ Options options;
            switch (option)
         {
         case 0:
-            ajouterCommande("Commandes.bin");
+            addCommand("Commandes.bin");
             printf("\nPress any key to prove...");
             c_getch();
             commande();
             break;
         case 1:
-            afficherCommandes("Commandes.bin");
+            displayCommands("Commandes.bin");
             printf("\n\nPress any key to prove...");
             c_getch();
             commande();
             break;
         case 2:
-            supprimerCommande("Commandes.bin");
+            deleteCommand("Commandes.bin");
             printf("\n\nPress any key to prove...");
             c_getch();
             commande();
@@ -148,8 +218,60 @@ Options options;
        
     }
     void reservation(){
-        
+        options.title = "=== GESTION DES RESERVATIONS ===";
+        options.ops = RESERV;
+        options.len = sizeof(RESERV) / sizeof(RESERV[0]);
+
+        int option = select_menu(options);
+        load_reservations(FILE_PATH1);
+        Reservation res;
+           switch (option)
+        {
+        case 0:
+            create_reservation(&res, FILE_PATH1);
+            c_textcolor(6);
+            printf("\nPress any key to prove...");
+            c_getch();
+            reservation();
+            break;
+        case 1:
+            display_reservations(FILE_PATH1);
+            c_textcolor(6);
+            printf("\n\nPress any key to prove...");
+            c_getch();
+            reservation();
+            break;
+        case 2:
+            int id;
+            c_gotoxy(3,10);
+            c_textcolor(6);
+            printf("Enter the reservation ID to delete: ");
+            c_textcolor(15);
+            scanf("%d", &id);
+            getchar();
+            delete_reservation(id, FILE_PATH1);
+            printf("\n\n\nPress any key to prove...");
+            c_getch();
+            reservation();
+            break;
+        case 3:
+            resp();
+            break;
+             default:
+            printf("\nInvalid choice! Please try again.\n");
+        }
+       
     }
+    void facture(){
+        
+    int commande_id;
+
+    printf("Enter the Command ID to generate a facture: ");
+    scanf("%d", &commande_id);
+    c_clrscr();
+    creerFacture(commande_id);
+    }
+    
     void emploi(){
         
         options.title = "=== GESTION DES EMPLOYEES ===";
@@ -203,14 +325,16 @@ Options options;
             dashboard();
             break;
         case 1:
-            displayMenuTable();
+            displayMenu();
+            printf("\n\nPress any key to prove...");
+            c_getch();
             dashboard(); 
             break;
         case 2:
             utilisation();
             break;
         default:
-
+            printf("\nInvalid choice! Please try again.\n");
             break;
         }
     }

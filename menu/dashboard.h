@@ -1,10 +1,306 @@
 #ifndef dashboard_h
 #define dashboard_h
 #include <stdio.h>
-#include <conio.h>
+#include <stdlib.h>
+#include <string.h>
 #include "conio.h"
-#include <windows.h>
 
+// Structure for dishes
+typedef struct {
+    int id;                   // Unique identifier
+    char category[30];        // Category (e.g., "Main Course", "Dessert")
+    char name[50];            // Name of the dish
+    float price;              // Price
+} Dish;
+
+// Structure for drinks
+typedef struct {
+    int id;                   // Unique identifier
+    char name[50];            // Name of the drink
+    float price;              // Price
+} Drink;
+
+// Function prototypes
+void addDish();
+void addDrink();
+void displayMenu();
+void editDish();
+void editDrink();
+void deleteDish();
+void deleteDrink();
+int getNextDishID();
+int getNextDrinkID();
+void afficherInfosRestaurant();
+
+// Binary file paths
+const char *dishFilePath = "dishes.bin";
+const char *drinkFilePath = "drinks.bin";
+
+// Main function
+// Menu function
+
+// Function to get the next unique ID for a dish
+int getNextDishID() {
+    FILE *file = fopen(dishFilePath, "rb");
+    if (!file) return 1; // If file doesn't exist, start IDs from 1
+
+    Dish dish;
+    fseek(file,  -(long)sizeof(Dish), SEEK_END);
+    if (fread(&dish, sizeof(Dish), 1, file) == 1) {
+        fclose(file);
+        return dish.id + 1;
+    }
+
+    fclose(file);
+    return 1;
+}
+
+// Function to get the next unique ID for a drink
+int getNextDrinkID() {
+    FILE *file = fopen(drinkFilePath, "rb");
+    if (!file) return 1; // If file doesn't exist, start IDs from 1
+
+    Drink drink;
+    fseek(file, -(long)sizeof(Drink), SEEK_END);
+    if (fread(&drink, sizeof(Drink), 1, file) == 1) {
+        fclose(file);
+        return drink.id + 1;
+    }
+
+    fclose(file);
+    return 1;
+}
+
+// Add a new dish
+void addDish() {
+    FILE *file = fopen(dishFilePath, "ab");
+    if (!file) {
+        printf("Error opening file!\n");
+        return;
+    }
+
+    Dish dish;
+    dish.id = getNextDishID();
+
+    printf("Enter Dish Details:\n");
+    printf("Category: ");
+    scanf("%s", dish.category);
+    printf("Name: ");
+    scanf(" %[^\n]s", dish.name);
+    printf("Price: ");
+    scanf("%f", &dish.price);
+
+    fwrite(&dish, sizeof(Dish), 1, file);
+    fclose(file);
+
+    printf("Dish added successfully with ID %d!\n", dish.id);
+}
+
+// Add a new drink
+void addDrink() {
+    FILE *file = fopen(drinkFilePath, "ab");
+    if (!file) {
+        printf("Error opening file!\n");
+        return;
+    }
+
+    Drink drink;
+    drink.id = getNextDrinkID();
+
+    printf("Enter Drink Details:\n");
+    printf("Name: ");
+    scanf(" %[^\n]s", drink.name);
+    printf("Price: ");
+    scanf("%f", &drink.price);
+
+    fwrite(&drink, sizeof(Drink), 1, file);
+    fclose(file);
+
+    printf("Drink added successfully with ID %d!\n", drink.id);
+}
+
+// Display the menu
+void displayMenu() {
+    FILE *dishFile = fopen(dishFilePath, "rb");
+    FILE *drinkFile = fopen(drinkFilePath, "rb");
+
+    if (!dishFile || !drinkFile) {
+        printf("Error opening files!\n");
+        return;
+    }
+
+    Dish dish;
+    Drink drink;
+
+    printf("\n=========== MENU ===========\n");
+
+    printf("\nDishes:\n");
+    printf("No\tCategory\tName\t\t\tPrice\n");
+    while (fread(&dish, sizeof(Dish), 1, dishFile)) {
+        printf("%d\t%s\t\t%s\t\t$%.2f\n", dish.id, dish.category, dish.name, dish.price);
+    }
+
+    printf("\nDrinks:\n");
+    printf("No\tName\t\t\tPrice\n");
+    while (fread(&drink, sizeof(Drink), 1, drinkFile)) {
+        printf("%d\t%s\t\t\t$%.2f\n", drink.id, drink.name, drink.price);
+    }
+
+    fclose(dishFile);
+    fclose(drinkFile);
+}
+
+// Edit a dish
+void editDish() {
+    FILE *file = fopen(dishFilePath, "rb+");
+    if (!file) {
+        printf("Error opening file!\n");
+        return;
+    }
+
+    int id;
+    Dish dish;
+    int found = 0;
+
+    printf("Enter the ID of the dish to edit: ");
+    scanf("%d", &id);
+
+    while (fread(&dish, sizeof(Dish), 1, file)) {
+        if (dish.id == id) {
+            found = 1;
+            printf("Enter new details for Dish ID %d:\n", id);
+            printf("Category: ");
+            scanf("%s", dish.category);
+            printf("Name: ");
+            scanf(" %[^\n]s", dish.name);
+            printf("Price: ");
+            scanf("%f", &dish.price);
+
+            fseek(file,  -(long)sizeof(Dish), SEEK_CUR);
+            fwrite(&dish, sizeof(Dish), 1, file);
+            printf("Dish updated successfully!\n");
+            break;
+        }
+    }
+
+    if (!found) {
+        printf("Dish with ID %d not found.\n", id);
+    }
+
+    fclose(file);
+}
+
+// Edit a drink
+void editDrink() {
+    FILE *file = fopen(drinkFilePath, "rb+");
+    if (!file) {
+        printf("Error opening file!\n");
+        return;
+    }
+
+    int id;
+    Drink drink;
+    int found = 0;
+
+    printf("Enter the ID of the drink to edit: ");
+    scanf("%d", &id);
+
+    while (fread(&drink, sizeof(Drink), 1, file)) {
+        if (drink.id == id) {
+            found = 1;
+            printf("Enter new details for Drink ID %d:\n", id);
+            printf("Name: ");
+            scanf(" %[^\n]s", drink.name);
+            printf("Price: ");
+            scanf("%f", &drink.price);
+
+            fseek(file, -(long)sizeof(Drink), SEEK_CUR);
+            fwrite(&drink, sizeof(Drink), 1, file);
+            printf("Drink updated successfully!\n");
+            break;
+        }
+    }
+
+    if (!found) {
+        printf("Drink with ID %d not found.\n", id);
+    }
+
+    fclose(file);
+}
+
+// Delete a dish
+void deleteDish() {
+    FILE *file = fopen(dishFilePath, "rb");
+    FILE *tempFile = fopen("temp.bin", "wb");
+    if (!file || !tempFile) {
+        printf("Error opening file!\n");
+        return;
+    }
+
+    int id;
+    Dish dish;
+    int found = 0;
+
+    printf("Enter the ID of the dish to delete: ");
+    scanf("%d", &id);
+
+    while (fread(&dish, sizeof(Dish), 1, file)) {
+        if (dish.id == id) {
+            found = 1;
+            continue; // Skip writing this record to the temp file
+        }
+        fwrite(&dish, sizeof(Dish), 1, tempFile);
+    }
+
+    fclose(file);
+    fclose(tempFile);
+
+    remove(dishFilePath);
+    rename("temp.bin", dishFilePath);
+
+    if (found) {
+        printf("Dish deleted successfully!\n");
+    } else {
+        printf("Dish with ID %d not found.\n", id);
+    }
+}
+
+// Delete a drink
+void deleteDrink() {
+    FILE *file = fopen(drinkFilePath, "rb");
+    FILE *tempFile = fopen("temp.bin", "wb");
+    if (!file || !tempFile) {
+        printf("Error opening file!\n");
+        return;
+    }
+
+    int id;
+    Drink drink;
+    int found = 0;
+
+    printf("Enter the ID of the drink to delete: ");
+    scanf("%d", &id);
+
+    while (fread(&drink, sizeof(Drink), 1, file)) {
+        if (drink.id == id) {
+            found = 1;
+            continue; // Skip writing this record to the temp file
+        }
+        fwrite(&drink, sizeof(Drink), 1, tempFile);
+    }
+
+    fclose(file);
+    fclose(tempFile);
+
+    remove(drinkFilePath);
+    rename("temp.bin", drinkFilePath);
+
+    if (found) {
+        printf("Drink deleted successfully!\n");
+    } else {
+        printf("Drink with ID %d not found.\n", id);
+    }
+}
 void afficherInfosRestaurant() {
     system("cls"); 
 
@@ -108,92 +404,4 @@ void afficherInfosRestaurant() {
     printf("Appuyez sur une touche pour quitter...");
     c_getch();
 }
-
-
-void displayMenuTable() {
-    system("cls"); 
-
-    c_gotoxy(7, 1);
-    c_textcolor(15); 
-    c_textbackground(11);
-    printf("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-    c_gotoxy(7, 2);
-    c_textcolor(0);
-    printf
-    ("             ========= MENU OF DRAGANWORRIER RESTAURANT =========               ");
-    c_gotoxy(7, 3);
-    c_textcolor(15);
-    printf("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-
-    c_textbackground(0);
-    
-    c_gotoxy(10, 5);
-    c_textcolor(14); 
-    printf("No.");
-    c_gotoxy(20, 5);
-    printf("Category");
-    c_gotoxy(40, 5);
-    printf("Dish Name");
-    c_gotoxy(65, 5);
-    printf("Price (USD)");
-
-    c_textcolor(0); 
-    c_textbackground(11);
-    c_gotoxy(7, 6);
-    printf("=======================================================================");
-    c_textbackground(0);
-    c_textcolor(14); c_gotoxy(10, 7); printf("1"); c_textcolor(15); c_gotoxy(20, 7); printf("Appetizer"); c_gotoxy(40, 7); printf("Thai Salad"); c_textcolor(2); c_gotoxy(65, 7); printf("8.50 USD");
-    c_textcolor(14); c_gotoxy(10, 8); printf("2"); c_textcolor(15); c_gotoxy(20, 8); printf("Appetizer"); c_gotoxy(40, 8); printf("Chicken Gyoza"); c_textcolor(2); c_gotoxy(65, 8); printf("7.00 USD");
-    c_textcolor(14); c_gotoxy(10, 9); printf("3"); c_textcolor(15); c_gotoxy(20, 9); printf("Appetizer"); c_gotoxy(40, 9); printf("Spring Rolls"); c_textcolor(2); c_gotoxy(65, 9); printf("6.00 USD");
-    c_textcolor(14); c_gotoxy(10, 10); printf("4"); c_textcolor(15); c_gotoxy(20, 10); printf("Appetizer"); c_gotoxy(40, 10); printf("Tempura"); c_textcolor(2); c_gotoxy(65, 10); printf("8.00 USD");
-
-// Main Courses
-    c_textcolor(14); c_gotoxy(10, 11); printf("5"); c_textcolor(15); c_gotoxy(20, 11); printf("Main Course"); c_gotoxy(40, 11); printf("Green Curry Chicken"); c_textcolor(2); c_gotoxy(65, 11); printf("14.50 USD");
-    c_textcolor(14); c_gotoxy(10, 12); printf("6"); c_textcolor(15); c_gotoxy(20, 12); printf("Main Course"); c_gotoxy(40, 12); printf("Stir-fried Vegetables"); c_textcolor(2); c_gotoxy(65, 12); printf("13.00 USD");
-    c_textcolor(14); c_gotoxy(10, 13); printf("7"); c_textcolor(15); c_gotoxy(20, 13); printf("Main Course"); c_gotoxy(40, 13); printf("Salmon Teriyaki"); c_textcolor(2); c_gotoxy(65, 13); printf("15.00 USD");
-    c_textcolor(14); c_gotoxy(10, 14); printf("8"); c_textcolor(15); c_gotoxy(20, 14); printf("Main Course"); c_gotoxy(40, 14); printf("Beef Bulgogi"); c_textcolor(2); c_gotoxy(65, 14); printf("16.00 USD");
-    c_textcolor(14); c_gotoxy(10, 15); printf("9"); c_textcolor(15); c_gotoxy(20, 15); printf("Main Course"); c_gotoxy(40, 15); printf("Shrimp Pad Thai"); c_textcolor(2); c_gotoxy(65, 15); printf("14.00 USD");
-    c_textcolor(14); c_gotoxy(10, 16); printf("10"); c_textcolor(15); c_gotoxy(20, 16); printf("Main Course"); c_gotoxy(40, 16); printf("Spicy Tuna Roll"); c_textcolor(2); c_gotoxy(65, 16); printf("12.50 USD");
-    c_textcolor(14); c_gotoxy(10, 17); printf("11"); c_textcolor(15); c_gotoxy(20, 17); printf("Main Course"); c_gotoxy(40, 17); printf("Sushi Platter"); c_textcolor(2); c_gotoxy(65, 17); printf("18.00 USD");
-    c_textcolor(14); c_gotoxy(10, 18); printf("12"); c_textcolor(15); c_gotoxy(20, 18); printf("Main Course"); c_gotoxy(40, 18); printf("Chicken Katsu"); c_textcolor(2); c_gotoxy(65, 18); printf("13.50 USD");
-    c_textcolor(14); c_gotoxy(10, 19); printf("13"); c_textcolor(15); c_gotoxy(20, 19); printf("Main Course"); c_gotoxy(40, 19); printf("BBQ Pork Ribs"); c_textcolor(2); c_gotoxy(65, 19); printf("16.50 USD");
-
-// Desserts
-    c_textcolor(14); c_gotoxy(10, 20); printf("14"); c_textcolor(15); c_gotoxy(20, 20); printf("Dessert"); c_gotoxy(40, 20); printf("Mochi Ice Cream"); c_textcolor(2); c_gotoxy(65, 20); printf("6.50 USD");
-    c_textcolor(14); c_gotoxy(10, 21); printf("15"); c_textcolor(15); c_gotoxy(20, 21); printf("Dessert"); c_gotoxy(40, 21); printf("Matcha Tart"); c_textcolor(2); c_gotoxy(65, 21); printf("7.00 USD");
-    c_textcolor(14); c_gotoxy(10, 22); printf("16"); c_textcolor(15); c_gotoxy(20, 22); printf("Dessert"); c_gotoxy(40, 22); printf("Mango Soup"); c_textcolor(2); c_gotoxy(65, 22); printf("6.00 USD");
-    c_textcolor(14); c_gotoxy(10, 23); printf("17"); c_textcolor(15); c_gotoxy(20, 23); printf("Dessert"); c_gotoxy(40, 23); printf("Green Tea Cheesecake"); c_textcolor(2); c_gotoxy(65, 23); printf("7.50 USD");
-    c_textcolor(14); c_gotoxy(10, 24); printf("18"); c_textcolor(15); c_gotoxy(20, 24); printf("Dessert"); c_gotoxy(40, 24); printf("Chocolate Lava Cake"); c_textcolor(2); c_gotoxy(65, 24); printf("8.00 USD");
-    c_textcolor(14); c_gotoxy(10, 25); printf("19"); c_textcolor(15); c_gotoxy(20, 25); printf("Dessert"); c_gotoxy(40, 25); printf("Vanilla Panna Cotta"); c_textcolor(2); c_gotoxy(65, 25); printf("7.00 USD");
-    c_textcolor(14); c_gotoxy(10, 26); printf("20"); c_textcolor(15); c_gotoxy(20, 26); printf("Dessert"); c_gotoxy(40, 26); printf("Caramel Flan"); c_textcolor(2); c_gotoxy(65, 26); printf("6.50 USD");
-    c_textcolor(14); c_gotoxy(10, 27); printf("21"); c_textcolor(15); c_gotoxy(20, 27); printf("Dessert"); c_gotoxy(40, 27); printf("Fruit Parfait"); c_textcolor(2); c_gotoxy(65, 27); printf("5.50 USD");
-    c_textcolor(14); c_gotoxy(10, 28); printf("22"); c_textcolor(15); c_gotoxy(20, 28); printf("Dessert"); c_gotoxy(40, 28); printf("Matcha Roll Cake"); c_textcolor(2); c_gotoxy(65, 28); printf("6.50 USD");
-
-    c_textbackground(11);
-    c_textcolor(0);
-    c_gotoxy(7, 29);
-    printf("=======================================================================");
-    c_textbackground(0);
-    
-    c_gotoxy(85, 10);
-    c_textcolor(14); 
-    printf("Drink Options:");
-
-    c_textcolor(15);  c_gotoxy(85, 11); printf("- Matcha Green Tea: ");c_textcolor(2); printf("3.00 USD");
-    c_textcolor(15);  c_gotoxy(85, 12); printf("- Homemade Lemonade: ");c_textcolor(2); printf("4.50 USD");
-    c_textcolor(15);  c_gotoxy(85, 13); printf("- Mineral Water: ");c_textcolor(2); printf("2.00 USD");
-    c_textcolor(15);  c_gotoxy(85, 14); printf("- Coconut Water: ");c_textcolor(2); printf("3.50 USD");
-    c_textcolor(15);  c_gotoxy(85, 15); printf("- Sparkling Water: ");c_textcolor(2); printf("3.00 USD");
-    c_textcolor(15);  c_gotoxy(85, 16); printf("- Iced Coffee: ");c_textcolor(2); printf("4.00 USD");
-    c_textcolor(15);  c_gotoxy(85, 17); printf("- Mango Smoothie: ");c_textcolor(2); printf("5.00 USD");
-    c_textcolor(15);  c_gotoxy(85, 18); printf("- Berry Iced Tea: ");c_textcolor(2); printf("4.50 USD");
-
-    
-    c_gotoxy(90, 31);
-    c_textcolor(6); 
-    printf("Press any key to exit...");
-    c_getch();
-    c_textcolor(15); 
-}
-
 #endif

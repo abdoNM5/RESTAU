@@ -1,164 +1,173 @@
-#ifndef commande_h
-#define commande_h
+#ifndef COMMAND_H
+#define COMMAND_H
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 
 typedef struct {
     int id;
-    char type_commande[5];
-    int num_dom;
-    char plat[10][30];
-    int quantite[10];
-    float prix[10];
-    float prix_total;
-} Commande;
+    char date[20];
+    char order_type[5];
+    int num_items;
+    char dishes[10][30];
+    int quantities[10];
+    float prices[10];
+    float total_price;
+} Command;
 
+// Function to clear the input buffer
 void clearBuffer() {
     while (getchar() != '\n');
 }
 
-void ajouterCommande(const char *nomFichier) {
-    Commande commande;
-    FILE *fichier = fopen(nomFichier, "ab+");
-    if (fichier == NULL) {
-        perror("Erreur lors de l'ouverture du fichier");
-        return;
-    }
-
-    int id_exist;
-    int local_id;
-
-    do {
-        rewind(fichier); 
-        id_exist = 0;
-
-        printf("Entrez l'ID de la commande : ");
-        while (scanf("%d", &local_id) != 1) {
-            printf("Entrée invalide ! Veuillez entrer un entier : ");
-            clearBuffer();
-        }
-
-        while (fread(&commande, sizeof(Commande), 1, fichier)) {
-            if (commande.id == local_id) {
-                id_exist = 1;
-                printf("Erreur : l'ID %d existe déjà ! Veuillez entrer un autre ID.\n", local_id);
-                break;
-            }
-        }
-    } while (id_exist);
-
-    commande.id = local_id;
-
-    do {
-        printf("Entrez le type de commande (in/out) : ");
-        scanf("%s", commande.type_commande);
-        clearBuffer();
-        if (strcmp(commande.type_commande, "in") != 0 && strcmp(commande.type_commande, "out") != 0) {
-            printf("Type invalide ! Veuillez entrer 'in' ou 'out'.\n");
-        }
-    } while (strcmp(commande.type_commande, "in") != 0 && strcmp(commande.type_commande, "out") != 0);
-
-    printf("Entrez le nombre de plats dans la commande : ");
-    while (scanf("%d", &commande.num_dom) != 1 || commande.num_dom <= 0 || commande.num_dom > 10) {
-        printf("Entrée invalide ! Veuillez entrer un nombre entre 1 et 10 : ");
-        clearBuffer();
-    }
-
-    commande.prix_total = 0;
-    for (int i = 0; i < commande.num_dom; i++) {
-        printf("Entrez le nom du plat %d : ", i + 1);
-        clearBuffer();
-        fgets(commande.plat[i], sizeof(commande.plat[i]), stdin);
-        commande.plat[i][strcspn(commande.plat[i], "\n")] = '\0';
-
-        printf("Entrez la quantité pour %s : ", commande.plat[i]);
-        while (scanf("%d", &commande.quantite[i]) != 1 || commande.quantite[i] <= 0) {
-            printf("Entrée invalide ! Veuillez entrer une quantité valide : ");
-            clearBuffer();
-        }
-
-        printf("Entrez le prix unitaire pour %s : ", commande.plat[i]);
-        while (scanf("%f", &commande.prix[i]) != 1 || commande.prix[i] <= 0) {
-            printf("Entrée invalide ! Veuillez entrer un prix valide : ");
-            clearBuffer();
-        }
-
-        commande.prix_total += commande.quantite[i] * commande.prix[i];
-    }
-
-    fwrite(&commande, sizeof(Commande), 1, fichier);
-    fclose(fichier);
-    printf("Commande ajoutée avec succès !\n");
+// Function to get the current date as a string
+void getCurrentDate(char *date_str, size_t size) {
+    time_t now = time(NULL);
+    struct tm *time_info = localtime(&now);
+    strftime(date_str, size, "%Y-%m-%d %H:%M:%S", time_info);
 }
 
-void afficherCommandes(const char *nomFichier) {
-    Commande commande;
-    FILE *fichier = fopen(nomFichier, "rb");
-    if (fichier == NULL) {
-        perror("Erreur lors de l'ouverture du fichier");
+// Function to add a command
+void addCommand(const char *filename) {
+    Command command;
+    FILE *file = fopen(filename, "ab+");
+    if (file == NULL) {
+        perror("Error opening file");
         return;
     }
 
-    printf("\n=== Liste des commandes ===\n");
-    while (fread(&commande, sizeof(Commande), 1, fichier)) {
-        printf("ID : %d\n", commande.id);
-        printf("Type de commande : %s\n", commande.type_commande);
-        printf("Détails de la commande :\n");
-        for (int i = 0; i < commande.num_dom; i++) {
-            printf("- %d x %s à %.2f DH\n", commande.quantite[i], commande.plat[i], commande.prix[i]);
+    // Determine the next ID
+    int next_id = 1;
+    rewind(file);
+    while (fread(&command, sizeof(Command), 1, file)) {
+        if (command.id >= next_id) {
+            next_id = command.id + 1;
         }
-        printf("Prix total : %.2f DH\n", commande.prix_total);
+    }
+    command.id = next_id;
+
+    // Get the current date
+    getCurrentDate(command.date, sizeof(command.date));
+
+    // Input order type
+    do {
+        printf("Enter order type (in/out): ");
+        scanf("%s", command.order_type);
+        clearBuffer();
+        if (strcmp(command.order_type, "in") != 0 && strcmp(command.order_type, "out") != 0) {
+            printf("Invalid type! Please enter 'in' or 'out'.\n");
+        }
+    } while (strcmp(command.order_type, "in") != 0 && strcmp(command.order_type, "out") != 0);
+
+    // Input number of dishes
+    printf("Enter the number of dishes in the order: ");
+    while (scanf("%d", &command.num_items) != 1 || command.num_items <= 0 || command.num_items > 10) {
+        printf("Invalid input! Please enter a number between 1 and 10: ");
+        clearBuffer();
+    }
+
+    // Input details for each dish
+    command.total_price = 0;
+    for (int i = 0; i < command.num_items; i++) {
+        printf("Enter the name of dish %d: ", i + 1);
+        clearBuffer();
+        fgets(command.dishes[i], sizeof(command.dishes[i]), stdin);
+        command.dishes[i][strcspn(command.dishes[i], "\n")] = '\0';
+
+        printf("Enter the quantity for %s: ", command.dishes[i]);
+        while (scanf("%d", &command.quantities[i]) != 1 || command.quantities[i] <= 0) {
+            printf("Invalid input! Please enter a valid quantity: ");
+            clearBuffer();
+        }
+
+        printf("Enter the unit price for %s: ", command.dishes[i]);
+        while (scanf("%f", &command.prices[i]) != 1 || command.prices[i] <= 0) {
+            printf("Invalid input! Please enter a valid price: ");
+            clearBuffer();
+        }
+
+        command.total_price += command.quantities[i] * command.prices[i];
+    }
+
+    // Save the command to the file
+    fwrite(&command, sizeof(Command), 1, file);
+    fclose(file);
+    printf("Command added successfully!\n");
+}
+
+// Function to display all commands
+void displayCommands(const char *filename) {
+    Command command;
+    FILE *file = fopen(filename, "rb");
+    if (file == NULL) {
+        perror("Error opening file");
+        return;
+    }
+
+    printf("\n=== List of Commands ===\n");
+    while (fread(&command, sizeof(Command), 1, file)) {
+        printf("ID: %d\n", command.id);
+        printf("Date: %s\n", command.date);
+        printf("Order Type: %s\n", command.order_type);
+        printf("Order Details:\n");
+        for (int i = 0; i < command.num_items; i++) {
+            printf("- %d x %s at %.2f each\n", command.quantities[i], command.dishes[i], command.prices[i]);
+        }
+        printf("Total Price: %.2f\n", command.total_price);
         printf("--------------------------\n");
     }
 
-    fclose(fichier);
+    fclose(file);
 }
 
-void supprimerCommande(const char *nomFichier) {
-    int id_supprimer;
-    int commande_trouvee = 0;
-    Commande commande;
+// Function to delete a command
+void deleteCommand(const char *filename) {
+    int id_to_delete;
+    int command_found = 0;
+    Command command;
 
-    FILE *fichier = fopen(nomFichier, "rb");
-    if (fichier == NULL) {
-        perror("Erreur lors de l'ouverture du fichier");
+    FILE *file = fopen(filename, "rb");
+    if (file == NULL) {
+        perror("Error opening file");
         return;
     }
 
-    FILE *tempFichier = fopen("temp.bin", "wb");
-    if (tempFichier == NULL) {
-        perror("Erreur lors de l'ouverture du fichier temporaire");
-        fclose(fichier);
+    FILE *tempFile = fopen("temp.bin", "wb");
+    if (tempFile == NULL) {
+        perror("Error opening temporary file");
+        fclose(file);
         return;
     }
 
-    printf("Entrez l'ID de la commande à supprimer : ");
-    while (scanf("%d", &id_supprimer) != 1) {
-        printf("Entrée invalide ! Veuillez entrer un entier : ");
+    printf("Enter the ID of the command to delete: ");
+    while (scanf("%d", &id_to_delete) != 1) {
+        printf("Invalid input! Please enter an integer: ");
         clearBuffer();
     }
 
-    while (fread(&commande, sizeof(Commande), 1, fichier)) {
-        if (commande.id == id_supprimer) {
-            commande_trouvee = 1;
-            printf("Commande avec ID %d supprimée.\n", id_supprimer);
+    while (fread(&command, sizeof(Command), 1, file)) {
+        if (command.id == id_to_delete) {
+            command_found = 1;
+            printf("Command with ID %d deleted.\n", id_to_delete);
         } else {
-            fwrite(&commande, sizeof(Commande), 1, tempFichier);
+            fwrite(&command, sizeof(Command), 1, tempFile);
         }
     }
 
-    fclose(fichier);
-    fclose(tempFichier);
+    fclose(file);
+    fclose(tempFile);
 
-    if (commande_trouvee) {
-        remove(nomFichier);
-        if (rename("temp.bin", nomFichier) != 0) {
-            perror("Erreur lors du renommage du fichier temporaire");
+    if (command_found) {
+        remove(filename);
+        if (rename("temp.bin", filename) != 0) {
+            perror("Error renaming temporary file");
         }
     } else {
-        printf("Aucune commande avec ID %d n'a été trouvée.\n", id_supprimer);
+        printf("No command with ID %d found.\n", id_to_delete);
         remove("temp.bin");
     }
 }
+
 #endif
