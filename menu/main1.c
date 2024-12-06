@@ -114,7 +114,7 @@ Options options;
         int option = select_menu(options);
         if (option == 0){
             emploi();
-        }else if (option == 3){
+        }else if (option == 4){
             utilisation();
         }else if (option == 1){
             menu();
