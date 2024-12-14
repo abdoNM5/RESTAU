@@ -35,7 +35,6 @@ Options options;
     char *MANAGER[] = {
         "EMPLOYEES",
         "GESTION MENU",
-        "STOKE",
         "RAPORT",
         "exit"
         };
@@ -77,7 +76,7 @@ Options options;
         void menu();
  
     void utilisation(){
-        options.title = "=== DragonWorrier Restaurant USERS ===";
+        options.title = "= DragonWorrier USERS =";
         options.ops = MAIN_OPTIONS;
         options.len = sizeof(MAIN_OPTIONS) / sizeof(MAIN_OPTIONS[0]);
 
@@ -107,21 +106,21 @@ Options options;
     }
     void gerant(){   
 
-        options.title = "==== MANAGER WORKSPACE ====";
+        options.title = "== MANAGER WORKSPACE ==";
         options.ops = MANAGER;
         options.len = sizeof(MANAGER) / sizeof(MANAGER[0]);
 
         int option = select_menu(options);
         if (option == 0){
             emploi();
-        }else if (option == 4){
+        }else if (option == 3){
             utilisation();
         }else if (option == 1){
             menu();
         }
         }
     void resp(){
-        options.title = "=== RESEP WORKSPACE ===";
+        options.title = "== RESEP WORKSPACE ==";
         options.ops = RESEPS;
         options.len = sizeof(RESEPS) / sizeof(RESEPS[0]);
 
@@ -134,10 +133,12 @@ Options options;
             reservation();
         }else if (option == 2){
             facture();
+            c_getch();
+            resp(); 
         }
     }
     void menu(){
-        options.title = "========== Restaurant Menu Management ==========";
+        options.title = "== Restaurant Menu Management ==";
         options.ops = MENU;
         options.len = sizeof(MENU) / sizeof(MENU[0]);
 
@@ -146,31 +147,26 @@ Options options;
         {
         case 0:
             addDish();
-            printf("\n\nPress any key to prove...");
             c_getch();
             menu();
             break;
         case 1:
             addDrink();
-            printf("\n\nPress any key to prove...");
             c_getch();
             menu();
             break;
         case 2:
-            displayMenu();
-            printf("\n\nPress any key to prove...");
+            displayMenu1();
             c_getch();
             menu();
             break;
         case 3:
             deleteDish();
-            printf("\n\nPress any key to prove...");
             c_getch();
             menu();
             break;
         case 4:
             deleteDrink();
-            printf("\nInvalid choice! Please try again.\n");
             c_getch();
             menu();
             break;
@@ -182,7 +178,7 @@ Options options;
         }
     }
     void commande(){
-        options.title = "=== GESTION DES COMMANDE ===";
+        options.title = "== GESTION DES COMMANDE ==";
         options.ops = COMMANDE;
         options.len = sizeof(COMMANDE) / sizeof(COMMANDE[0]);
 
@@ -190,26 +186,21 @@ Options options;
            switch (option)
         {
         case 0:
-            addCommand("Commandes.bin");
-            printf("\nPress any key to prove...");
+            addCommande("Commandes.bin",dishFilePath,drinkFilePath);
             c_getch();
             commande();
             break;
         case 1:
             displayCommands("Commandes.bin");
-            printf("\n\nPress any key to prove...");
             c_getch();
             commande();
             break;
         case 2:
             deleteCommand("Commandes.bin");
-            printf("\n\nPress any key to prove...");
             c_getch();
             commande();
             break;
         case 3:
-            printf("\n\nPress any key to prove...");
-            c_getch();
             resp();
             break;
              default:
@@ -218,7 +209,7 @@ Options options;
        
     }
     void reservation(){
-        options.title = "=== GESTION DES RESERVATIONS ===";
+        options.title = "== GESTION DES RESERVATIONS ==";
         options.ops = RESERV;
         options.len = sizeof(RESERV) / sizeof(RESERV[0]);
 
@@ -229,28 +220,23 @@ Options options;
         {
         case 0:
             create_reservation(&res, FILE_PATH1);
-            c_textcolor(6);
-            printf("\nPress any key to prove...");
             c_getch();
             reservation();
             break;
         case 1:
             display_reservations(FILE_PATH1);
-            c_textcolor(6);
-            printf("\n\nPress any key to prove...");
             c_getch();
             reservation();
             break;
         case 2:
             int id;
-            c_gotoxy(3,10);
+            c_gotoxy(38,15);
             c_textcolor(6);
             printf("Enter the reservation ID to delete: ");
             c_textcolor(15);
             scanf("%d", &id);
             getchar();
             delete_reservation(id, FILE_PATH1);
-            printf("\n\n\nPress any key to prove...");
             c_getch();
             reservation();
             break;
@@ -265,16 +251,19 @@ Options options;
     void facture(){
         
     int commande_id;
-
+    c_gotoxy(40,15);
+    c_textcolor(6);
     printf("Enter the Command ID to generate a facture: ");
     scanf("%d", &commande_id);
-    c_clrscr();
     creerFacture(commande_id);
+    c_gotoxy(40,17);
+    c_textcolor(10);
+    printf("PDF Facture generated: FACTEUR.pdf\n");
     }
     
     void emploi(){
         
-        options.title = "=== GESTION DES EMPLOYEES ===";
+        options.title = "== ESTION DES EMPLOYEES ==";
         options.ops = EMPLOYERS;
         options.len = sizeof(EMPLOYERS) / sizeof(EMPLOYERS[0]);
 
@@ -283,25 +272,21 @@ Options options;
         {
         case 0:
             addEmployee();
-            printf("\nPress any key to prove...");
             c_getch();
             emploi();
             break;
         case 1:
             displayEmployees();
-            printf("\n\nPress any key to prove...");
             c_getch();
             emploi();
             break;
         case 2:
             deleteEmployee();
-            printf("\n\nPress any key to prove...");
             c_getch();
             emploi();
             break;
         case 3:
             updateEmployee();
-            printf("\n\nPress any key to prove...");
             c_getch();
             emploi();
             break;
@@ -313,7 +298,7 @@ Options options;
         }
        }
     void dashboard(){
-        options.title = "=== Welcome To DragonWorrier Restaurant HOME ===";
+        options.title = "== Welcome To DragonWorrier HOME ==";
         options.ops = HOME;
         options.len = sizeof(HOME) / sizeof(HOME[0]);
 
@@ -325,8 +310,7 @@ Options options;
             dashboard();
             break;
         case 1:
-            displayMenu();
-            printf("\n\nPress any key to prove...");
+            displayMenu2();
             c_getch();
             dashboard(); 
             break;

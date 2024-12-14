@@ -14,27 +14,41 @@ stream
 BT
 /F1 12 Tf
 72 750 Td
-(================== FACTURE ==================) Tj
+(============================== BOULEVARD ==========================) Tj
 0 -20 Td
-(Command ID: 1 ) Tj
+(Address: Restaurant Al Atlas, Mohammed V, Quartier Administratif, Beni Mellal 2300.) Tj
 0 -20 Td
-(Type: in ) Tj
+(Phone: +212 6 12 34 56 78) Tj
 0 -20 Td
-(Date: 06-12-2024 ) Tj
+(====================================================================) Tj
+0 -20 Td
+(Command ID: 5) Tj
+0 -20 Td
+(Order Type: take-away) Tj
+0 -20 Td
+(Date: 14-12-2024) Tj
 0 -30 Td
-(---------------------------------------------) Tj
+(====================================================================) Tj
 0 -20 Td
-(| Product         | Quantity   | Unit Price | Total Price |) Tj
+(| Product Name                | Quantity | Unit Price | Total Price |) Tj
 0 -20 Td
-(---------------------------------------------) Tj
+(====================================================================) Tj
 0 -20 Td
-(| salade          | 1          | 4.00       DH | 4.00       DH |) Tj
+(| Tom Yum Soup               | 1          | 50.00     DH | 50.00     DH |) Tj
 0 -20 Td
-(---------------------------------------------) Tj
+(| Vegetable Tempura          | 2          | 40.00     DH | 80.00     DH |) Tj
 0 -20 Td
-(Grand Total: 4.00 DH ) Tj
+(| Beef Teriyaki              | 1          | 120.00    DH | 120.00    DH |) Tj
 0 -20 Td
-(=============================================) Tj
+(| Green Tea                  | 2          | 25.00     DH | 50.00     DH |) Tj
+0 -20 Td
+(| Orange Juice               | 1          | 25.00     DH | 25.00     DH |) Tj
+0 -20 Td
+(====================================================================) Tj
+0 -20 Td
+(Grand Total: 325.00 DH ) Tj
+0 -20 Td
+(=======================================================) Tj
 ET
 endstream
 endobj

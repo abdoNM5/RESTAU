@@ -5,6 +5,8 @@
 #include <string.h>
 #include <time.h>
 #include "commande.h"
+
+// PDF header structure for PDF generation
 char pdf_header[] = 
     "%%PDF-1.4\n"
     "1 0 obj\n"
@@ -23,6 +25,7 @@ char pdf_header[] =
     "/F1 12 Tf\n"
     "72 750 Td\n";
 
+// PDF footer structure for the PDF file
 char pdf_footer[] = 
     "ET\n"
     "endstream\n"
@@ -44,11 +47,12 @@ char pdf_footer[] =
     "482\n"
     "%%EOF\n";
 
+// Function to create a PDF invoice
 void creerFacture(int commande_id) {
-    char s[]="commandes.bin";
+    char s[] = "commandes.bin";
     FILE *file = fopen(s, "rb");
     if (file == NULL) {
-        printf("Error: Unable to open file %s\n",s );
+        printf("Error: Unable to open file %s\n", s);
         return;
     }
 
@@ -70,7 +74,7 @@ void creerFacture(int commande_id) {
     }
 
     // Open the PDF file for writing
-    FILE *FACT = fopen("FACTEUR.pdf", "w");
+    FILE *FACT = fopen("FACTEUR.pdf", "wb");  // Note: Open for binary writing
     if (FACT == NULL) {
         printf("Error: Unable to create FACTEUR.pdf file!\n");
         return;
@@ -79,37 +83,43 @@ void creerFacture(int commande_id) {
     // Write the PDF header
     fprintf(FACT, pdf_header);
 
-    // Add command details to the PDF
-    fprintf(FACT, "(================== FACTURE ==================) Tj\n0 -20 Td\n");
-    fprintf(FACT, "(Command ID: %d ) Tj\n0 -20 Td\n", commande.id);
-    fprintf(FACT, "(Type: %s ) Tj\n0 -20 Td\n", commande.order_type);
+    // Add restaurant header info
+    fprintf(FACT, "(============================== BOULEVARD ==========================) Tj\n0 -20 Td\n");
+    fprintf(FACT, "(Address: Restaurant Al Atlas, Mohammed V, Quartier Administratif, Beni Mellal 2300.) Tj\n0 -20 Td\n");
+    fprintf(FACT, "(Phone: +212 6 12 34 56 78) Tj\n0 -20 Td\n");
+    fprintf(FACT, "(====================================================================) Tj\n0 -20 Td\n");
+
+    // Add command details
+    fprintf(FACT, "(Command ID: %d) Tj\n0 -20 Td\n", commande.id);
+    fprintf(FACT, "(Order Type: %s) Tj\n0 -20 Td\n", commande.order_type);
 
     // Get the current date
     time_t currentTime = time(NULL);
     struct tm *localTime = localtime(&currentTime);
-    fprintf(FACT, "(Date: %02d-%02d-%d ) Tj\n0 -30 Td\n", 
+    fprintf(FACT, "(Date: %02d-%02d-%d) Tj\n0 -30 Td\n", 
             localTime->tm_mday, localTime->tm_mon + 1, localTime->tm_year + 1900);
 
-    fprintf(FACT, "(---------------------------------------------) Tj\n0 -20 Td\n");
-    fprintf(FACT, "(| Product         | Quantity   | Unit Price | Total Price |) Tj\n0 -20 Td\n");
-    fprintf(FACT, "(---------------------------------------------) Tj\n0 -20 Td\n");
+    fprintf(FACT, "(====================================================================) Tj\n0 -20 Td\n");
+
+    // Itemized List header
+    fprintf(FACT, "(| Product Name                | Quantity | Unit Price | Total Price |) Tj\n0 -20 Td\n");
+   fprintf(FACT, "(====================================================================) Tj\n0 -20 Td\n");
 
     // Add each product in the command to the PDF
     for (int i = 0; i < commande.num_items; i++) {
         float total_price = commande.quantities[i] * commande.prices[i];
-        fprintf(FACT, "(| %-15s | %-10d | %-10.2f DH | %-10.2f DH |) Tj\n0 -20 Td\n", 
+        fprintf(FACT, "(| %-27s| %-10d | %-10.2fDH | %-10.2fDH |) Tj\n0 -20 Td\n", 
                 commande.dishes[i], commande.quantities[i], commande.prices[i], total_price);
     }
 
     // Write the grand total
-    fprintf(FACT, "(---------------------------------------------) Tj\n0 -20 Td\n");
+    fprintf(FACT, "(====================================================================) Tj\n0 -20 Td\n");
     fprintf(FACT, "(Grand Total: %.2f DH ) Tj\n0 -20 Td\n", commande.total_price);
-    fprintf(FACT, "(=============================================) Tj\n");
+    fprintf(FACT, "(=======================================================) Tj\n");
 
     // Write the PDF footer and close the file
     fprintf(FACT, pdf_footer);
     fclose(FACT);
-
-    printf("PDF Facture generated: FACTEUR.pdf\n");
 }
+
 #endif

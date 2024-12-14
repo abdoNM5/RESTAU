@@ -25,7 +25,7 @@ void printCentered(const char *text, int y, int color);
 
 // Function to print centered text with color
 void printCentered(const char *text, int y, int color) {
-    int x = 20;
+    int x = 40;
     c_gotoxy(x, y);
     c_textcolor(color);
     printf("%s", text);
@@ -116,22 +116,20 @@ void displayEmployees() {
     }
 
     Employee emp;
-
-    c_textbackground(0); // Blue background
-    c_clrscr();          // Clear screen
-
-    printCentered("================= Employee Records =================", 10, 14);
-    c_gotoxy(21, 12);
+    c_textcolor(14);
+    c_gotoxy(36,12);
+    printf("================= Employee Records ==================");
+    c_gotoxy(36, 14);
     c_textcolor(11); // Cyan
-    printf("%-10s%-20s%-10s%-20s\n", "ID", "Name", "Salary(DH)", "Position");
-    c_gotoxy(21, 13);
-    printf("===================================================");
+    printf("%-10s%-20s%-15s%-20s\n", "ID", "Name", "Salary(DH)", "Position");
+    c_gotoxy(36, 15);
+    printf("=====================================================");
 
-    int y = 14;
+    int y = 16;
     c_textcolor(15); // White
     while (fread(&emp, sizeof(Employee), 1, file)) {
-        c_gotoxy(21, y++);
-        printf("%-10d%-20s%-10.2f%-20s\n", emp.id, emp.name, emp.salary, emp.position);
+        c_gotoxy(36, y++);
+        printf("%-10d%-20s%-15.2f%-20s\n", emp.id, emp.name, emp.salary, emp.position);
     }
 
     fclose(file);
