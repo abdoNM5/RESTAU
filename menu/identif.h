@@ -11,8 +11,8 @@ typedef struct {
     char password[15];
 } User;
 User users[2] = {
-    {"K", "123"},   // Manager credentials
-    {"Y", "123"} // Receptionist credentials
+    {"ABDELKABIR", "2004"},   // Manager credentials
+    {"ABDELKADER", "2005"} // Receptionist credentials
 };
 int authenticate(char *username, char *password) {
     int usernameValid = 0; // Flag for username validation

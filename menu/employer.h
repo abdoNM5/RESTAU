@@ -118,12 +118,12 @@ void displayEmployees() {
     Employee emp;
     c_textcolor(14);
     c_gotoxy(36,12);
-    printf("================= Employee Records ==================");
+    printf("===================== Employee Records ========================");
     c_gotoxy(36, 14);
     c_textcolor(11); // Cyan
     printf("%-10s%-20s%-15s%-20s\n", "ID", "Name", "Salary(DH)", "Position");
     c_gotoxy(36, 15);
-    printf("=====================================================");
+    printf("===============================================================");
 
     int y = 16;
     c_textcolor(15); // White
