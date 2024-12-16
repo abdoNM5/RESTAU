@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <windows.h>
+#include <unistd.h> 
 
 #define RESET       "\033[0m"   // Reset all styles
 #define BLACK       "\033[30m"
@@ -161,5 +162,56 @@ Options util(char *titre ,char **list_ops){
      options.len = sizeof(list_ops) / sizeof(list_ops[0]);
 
      return options;
+}
+
+
+#define GOTOXY(x, y) printf("\033[%d;%dH", (y), (x))
+
+// Function to display "Veuillez patienter" with a loading animation
+void veuillez_patientez() {
+    const char *loading_symbols = "|/-\\"; // Spinning symbols
+    const int delay = 200000; // Delay in microseconds (200ms)
+    const char *colors[] = {RED, YELLOW, GREEN, CYAN, MAGENTA, BLUE}; // Array of colors
+    const int color_count = 6; // Number of colors
+
+    // Move cursor to x=40, y=19
+    GOTOXY(40, 17);
+    printf(BOLD CYAN "Please wait ! ..." RESET); // Styled "Veuillez patienter"
+    fflush(stdout);
+
+    for (int i = 0; i < 30; i++) { // Loop to simulate loading for a few seconds
+        // Print spinner at the same position
+        printf("\b%s%c" RESET, colors[i % color_count], loading_symbols[i % 4]);
+        fflush(stdout); // Flush output to update the symbol instantly
+        usleep(delay);  // Wait for a short period (200ms)
+    }
+   
+}
+void image(const char *filepath) {
+    char commandI[512];
+
+    // Format the command to open the image
+    snprintf(commandI, sizeof(commandI), "start \"\" \"%s\"", filepath);
+
+    // Execute the command
+    int result = system(commandI);
+
+    if (result != 0) {
+        printf("Failed to open the image: %s\n", filepath);
+    }
+}
+void openPDFInEdge(const char *filePath) {
+    char command[512]; // Buffer to hold the PowerShell command
+
+    // Format the command to open the PDF in Microsoft Edge
+    snprintf(command, sizeof(command), "powershell -Command \"Start-Process 'msedge.exe' -ArgumentList '%s'\"", filePath);
+
+    // Execute the command
+    int result = system(command);
+
+    // Check if the command was executed successfully
+    if (result != 0) {
+        printf("Failed to open the PDF in Microsoft Edge.\n");
+    } 
 }
 #endif 

@@ -10,6 +10,7 @@
 #include "commande.h"
 #include "reservation.h"
 #include "facture.h"
+#include "statistic.h"
 #define FILE_PATH1 "reservations.bin"
 Options options;
 
@@ -35,7 +36,7 @@ Options options;
     char *MANAGER[] = {
         "EMPLOYEES",
         "GESTION MENU",
-        "RAPORT",
+        "STATICTIC",
         "exit"
         };
     char *EMPLOYERS[] = {
@@ -76,7 +77,7 @@ Options options;
         void menu();
  
     void utilisation(){
-        options.title = "= DragonWorrier USERS =";
+        options.title = "= Al ATLAS USERS =";
         options.ops = MAIN_OPTIONS;
         options.len = sizeof(MAIN_OPTIONS) / sizeof(MAIN_OPTIONS[0]);
 
@@ -117,10 +118,23 @@ Options options;
             utilisation();
         }else if (option == 1){
             menu();
+        }else if (option == 2){
+            stat();
+            c_clrscr();
+            c_gotoxy(40,14);c_textcolor(10);
+            printf("THE GRAPH GENERATED SUCSSESFULLY. :) >>");
+            veuillez_patientez();
+            c_clrscr();
+            c_gotoxy(40,14);c_textcolor(6);
+            printf("OPNING THE GRAPH >>...");
+            veuillez_patientez();
+            image("C:\\Users\\Pc\\Desktop\\newcproject\\RESTAU\\menu\\daily_totals.png");
+            c_getch();
+            gerant();
         }
         }
     void resp(){
-        options.title = "== RESEP WORKSPACE ==";
+        options.title = "== RECEPTIONIST WORKSPACE ==";
         options.ops = RESEPS;
         options.len = sizeof(RESEPS) / sizeof(RESEPS[0]);
 
@@ -251,14 +265,21 @@ Options options;
     void facture(){
         
     int commande_id;
-    c_gotoxy(40,15);
+    c_gotoxy(40,14);
     c_textcolor(6);
     printf("Enter the Command ID to generate a facture: ");
     scanf("%d", &commande_id);
     creerFacture(commande_id);
-    c_gotoxy(40,17);
+    veuillez_patientez();
+    c_gotoxy(40,18);
     c_textcolor(10);
     printf("PDF Facture generated: FACTEUR.pdf\n");
+    c_gotoxy(40,19);
+    printf("OPNING THE FACTURE ....");
+    veuillez_patientez();
+    const char *pdfPath = "C:\\Users\\Pc\\Desktop\\newcproject\\RESTAU\\menu\\FACTEUR.pdf"; 
+    openPDFInEdge(pdfPath);
+
     }
     
     void emploi(){
@@ -298,7 +319,7 @@ Options options;
         }
        }
     void dashboard(){
-        options.title = "== Welcome To DragonWorrier HOME ==";
+        options.title = "== Welcome To AL ATLAS HOME ==";
         options.ops = HOME;
         options.len = sizeof(HOME) / sizeof(HOME[0]);
 
