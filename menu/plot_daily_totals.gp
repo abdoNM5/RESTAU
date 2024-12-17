@@ -20,7 +20,7 @@ set xtics rotate by -45 font ",10" textcolor rgb "black"
 
 # Y-axis: Format for prices
 set format y "%.2f"      # Format Y values with 2 decimal places
-set yrange [0:7000]      # Set Y-axis range explicitly from 0 to 7000
+set yrange [0:10000]      # Set Y-axis range explicitly from 0 to 10000
 set ytics 1000           # Add Y-axis ticks at intervals of 1000
 
 # Custom line and point styles

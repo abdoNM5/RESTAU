@@ -72,7 +72,6 @@ void generateDataFileFromBinary(const char *binaryFile, const char *outputDataFi
 
     fclose(file);
     fclose(outputFile);
-    printf("Data file '%s' generated successfully from binary file '%s'!\n", outputDataFile,binaryFile);
 }
 
 // Function to execute the gnuplot script
